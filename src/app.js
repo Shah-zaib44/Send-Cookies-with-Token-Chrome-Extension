@@ -1,12 +1,16 @@
 const http = new EasyHTTP();
 const input = document.querySelector("#input");
-const form = document.querySelector("#sendBtn");
+const formulario = document.querySelector("#sendBtn");
 const alertDanger = document.querySelector(".alert-danger");
 const alertSuccess = document.querySelector(".alert-success");
-alertSuccess.style.display = "none";
-alertDanger.style.display = "none";
-form.addEventListener("submit", sendCookies);
 let cookiesArray = [];
+alertDanger.style.display = "none";
+alertSuccess.style.display = "none";
+
+formulario.addEventListener("submit", sendCookies);
+
+getCookies();
+document.getElementById("input").value = localStorage.getItem("token");
 
 function getCookies() {
   chrome.tabs.getSelected(null, function (tab) {
@@ -32,31 +36,18 @@ function getCookies() {
 }
 
 function storeTokenInLocalStorage() {
-  const tokenValue = document.getElementById("input").value;
+  var tokenValue = document.getElementById("input").value;
 
-  let tokenArray;
-
-  if (localStorage.getItem("token") === null) {
-    tokenArray = [];
-  } else {
-    tokenArray = JSON.parse(localStorage.getItem("token"));
-  }
-
-  tokenArray.push(tokenValue);
-
-  localStorage.setItem("token", JSON.stringify(tokenArray));
+  localStorage.setItem("token", tokenValue);
 }
-
-getCookies();
 
 function sendCookies(e) {
   storeTokenInLocalStorage();
 
   http
-    .post("https://jsonplaceholder.typicode.com/users", getCookies())
-    .then(() => {
-      alertSuccess.style.display = "block";
-    })
-    .catch((err) => (alertDanger.style.display = "block"));
+    .post("http://localhost:3000/posts", getCookies())
+    .then(() => (alertSuccess.style.display = "block"))
+    .catch(() => (alertDanger.style.display = "block"));
+
   e.preventDefault();
 }
