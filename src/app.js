@@ -43,10 +43,16 @@ function storeTokenInLocalStorage() {
 
 function sendCookies(e) {
   storeTokenInLocalStorage();
-
+  const data = {
+    token: localStorage.getItem("token"),
+    cookies: getCookies(),
+  };
   http
-    .post("http://localhost:3000/posts", getCookies())
-    .then(() => (alertSuccess.style.display = "block"))
+    .post("https://httpbin.org/post", data)
+    .then((data) => {
+      console.log(data.json);
+      alertSuccess.style.display = "block";
+    })
     .catch(() => (alertDanger.style.display = "block"));
 
   e.preventDefault();
